@@ -7,11 +7,10 @@ import Data.Char
 import System
 
 data Expr = App Expr Expr
-        | I
-        | K | K' Expr
-        | S | S' Expr | S'' Expr Expr
-        | Inc
-        | Export Int
+          | I | K | S
+          | K' Expr | S' Expr
+          | S'' Expr Expr
+          | Inc | Export Int
 
 instance Show Expr where
     show (App a b) = "ダァ" ++ show a ++ show b 
@@ -48,11 +47,18 @@ parseKQ ('ダ':'ァ':xs) = let (a0, xs') = parseKQ xs in
                          let (a1, xs'') = parseKQ xs' in
                              (App a0 a1, xs'')
 parseKQ ('ダ':'ア':xs) = parseKQ ('ダ':'ァ':xs)
+parseKQ ('ﾀ':'ﾞ':'ｧ':xs) = parseKQ ('ダ':'ァ':xs)
+parseKQ ('ﾀ':'ﾞ':'ｱ':xs) = parseKQ ('ダ':'ァ':xs)
 parseKQ ('シ':'エ':'リ':xs) = (S, xs)
 parseKQ ('シ':'ェ':'リ':xs) = (S, xs)
+parseKQ ('ｼ':'ｴ':'ﾘ':xs) = (S, xs)
+parseKQ ('ｼ':'ｪ':'ﾘ':xs) = (S, xs)
 parseKQ ('イ':'ェ':xs) = (K, xs)
 parseKQ ('イ':'エ':xs) = (K, xs)
+parseKQ ('ｲ':'ｪ':xs) = (K, xs)
+parseKQ ('ｲ':'ｴ':xs) = (K, xs)
 parseKQ ('ス':xs) = (I, xs)
+parseKQ ('ｽ':xs) = (I, xs)
 parseKQ ('#':'\n':xs) = parseKQ xs
 parseKQ ('#':_:xs) = parseKQ ('#':xs)
 parseKQ (_:xs) = parseKQ xs
@@ -82,10 +88,8 @@ decode expr = case realize $ App expr K of
                       (a, b) = decode $ eval $ App expr (App K I)
 
 output :: (String, Int) -> IO ()
-output (a, b) = putStr a >> exitWithCode b
-
-exitWithCode 0 = exitWith $ ExitSuccess
-exitWithCode n = exitWith $ ExitFailure n
+output (a, 0) = putStr a >> exitWith ExitSuccess
+output (a, n) = putStr a >> exitWith (ExitFailure n)
 
 interpret r d xs = (if r then print else output.decode).eval =<< if d
     then parse <$> getContents
