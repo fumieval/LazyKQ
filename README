@@ -14,7 +14,7 @@ LazyKQはあの「ダァ!シエリイェス!!」だけを使うプログラミ�
 
     コンパイルにはGHCが必要ダァ!
     $ ghc kq.hs -o kq
-    $ ./kq examples/helloworld.kq
+    $ ./kq README
     Hello, world!
     
 ダァダァダァダァダァダァ!ダァダァ! ブンポウ！シメシイェスス!
